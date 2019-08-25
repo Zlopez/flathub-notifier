@@ -1,0 +1,33 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+    . /etc/bashrc
+fi
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+# If adding new functions to this file, note that you can add help text to the function
+# by defining a variable with name _<function>_help containing the help text
+
+devstart (){
+    systemctl --user start flathub-notifier.service
+}
+
+devstop (){
+    systemctl --user stop flathub-notifier.service
+}
+
+devrestart (){
+    systemctl --user restart flathub-notifier.service
+}
+
+devstatus (){
+    systemctl --user status flathub-notifier.service
+}
+
+devlog (){
+    journalctl -f --user-unit flathub-notifier.service
+}

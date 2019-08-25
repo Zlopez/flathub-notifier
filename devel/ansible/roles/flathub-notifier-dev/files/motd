@@ -1,0 +1,13 @@
+
+Welcome to Flathub Notifier development environment!
+
+* The code for the-new-hotness is located at ~/devel/
+
+* Run `devstart` to start the notifier services and `devstop` to stop it.
+
+* Logs for the server are available with `journalctl` or `devlog`; the service is run
+  as systemd user units in ~/.config/systemd/user/
+
+* Run tests with `tox`
+Happy hacking!
+

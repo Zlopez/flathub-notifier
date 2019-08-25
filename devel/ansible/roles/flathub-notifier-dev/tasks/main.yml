@@ -1,0 +1,67 @@
+---
+
+- name: Install helpful development packages
+  dnf:
+    name: [
+      git,
+      tmux,
+      tree,
+      vim-enhanced,
+      tox,
+      gcc
+    ]
+    state: present
+
+- name: Install flathub-notifier development packages
+  dnf:
+    name: [
+      python3-flake8,
+      python3-mock,
+      fedora-messaging,
+      python3-fedora-messaging,
+      rabbitmq-server,
+      python3-black
+    ]
+    state: present
+
+# Add various helpful configuration files
+- name: Install a custom bashrc
+  become_user: "{{ ansible_env.SUDO_USER }}"
+  copy: src=bashrc dest=/home/{{ ansible_env.SUDO_USER }}/.bashrc
+
+- name: Install the message of the day
+  copy: src=motd dest=/etc/motd
+
+- name: Install flathub-notifier package into /usr/lib
+  pip:
+    name: [
+      "file:///home/{{ ansible_env.SUDO_USER }}/devel/",
+    ]
+    extra_args: '-e'
+    executable: pip-3
+
+- name: Install fedora-messaging config to ~/
+  become_user: "{{ ansible_env.SUDO_USER }}"
+  copy:
+    src: config.toml
+    dest: /home/{{ ansible_env.SUDO_USER }}/
+
+- name: Create systemd user unit directory
+  become_user: "{{ ansible_env.SUDO_USER }}"
+  file:
+    path: /home/{{ ansible_env.SUDO_USER }}/.config/systemd/user/
+    state: directory
+
+- name: Install the systemd user units
+  become_user: "{{ ansible_env.SUDO_USER }}"
+  copy:
+    src: "{{ item }}"
+    dest: /home/{{ ansible_env.SUDO_USER }}/.config/systemd/user/{{ item }}
+  with_items:
+    - flathub-notifier.service
+
+- name: Reload the systemd daemon
+  become_user: "{{ ansible_env.SUDO_USER }}"
+  command: systemctl --user daemon-reload
+
+- import_tasks: rabbitmq.yml
